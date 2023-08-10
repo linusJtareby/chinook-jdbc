@@ -20,6 +20,15 @@ public class ChinookService implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         chiDao.testDataBaseConnectionI();
-        chiDao.printAllCustomers();
+        // chiDao.printAllCustomers();
+        // chiDao.getCustomerById(5);
+        // System.out.println(chiDao.getAllCustomersToList());
+        // chiDao.getMostOccuringCountry();
+        // chiDao.insertCustomer("Linus", "Täreby", "Sweden", "39400", "test@test.com",
+        // "0733211434");
+        // chiDao.updateCustomer("Linus", "Täreby", "Sweden", "39400", "test@test.com",
+        // "0733211434", 61);
+        // chiDao.printCustomerByName("Linus");
+
     }
 }
