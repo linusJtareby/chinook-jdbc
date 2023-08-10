@@ -10,11 +10,16 @@ import com.chinook.chinookjdbc.dao.ChinookDAO;
 @Component
 public class ChinookService implements ApplicationRunner {
 
+    private final ChinookDAO chiDao;
+
     @Autowired
-    private ChinookDAO chiDao;
+    public ChinookService(ChinookDAO chiDao) {
+        this.chiDao = chiDao;
+    }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         chiDao.testDataBaseConnectionI();
+        chiDao.printAllCustomers();
     }
 }
