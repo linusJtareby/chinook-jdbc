@@ -25,6 +25,7 @@ public class ChinookDAO {
     @Value("${spring.datasource.password}")
     private String password;
 
+    // >>> Testing the database-connection
     public void testDataBaseConnectionI() {
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             System.out.print(String.format("\n>>> Connection to database %s\n", conn.getMetaData().getURL()));
@@ -33,6 +34,8 @@ public class ChinookDAO {
         }
     }
 
+    // >>> Building a string with the data from a Customer-record
+    // >>> Returns a string
     public String customerStringBuilder(Customer customer) {
         StringBuilder stringBuilder = new StringBuilder("Id: " + customer.id());
         stringBuilder.append("\n Name: " + customer.firstName());
@@ -45,6 +48,7 @@ public class ChinookDAO {
         return stringBuilder.toString();
     }
 
+    // >>> Gets all customers and prints them
     public void printAllCustomers() {
         String sql = "SELECT * FROM customer";
 
@@ -64,7 +68,8 @@ public class ChinookDAO {
         }
     }
 
-    // >>>
+    // >>>Gets the customer whit the inserted id and returns a record of this
+    // customer
     public Customer getCustomerById(int id) {
         String sql = "SELECT * FROM customer WHERE customer_id = ?";
 
