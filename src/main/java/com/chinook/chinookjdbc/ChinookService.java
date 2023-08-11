@@ -52,6 +52,7 @@ public class ChinookService implements ApplicationRunner {
         // + "\n It occurs " + chiDao.getMostOccurringCountry().noOfCustomers() + "
         // times!");
 
-        System.out.println(chiDao.getCustomersPegenation(5, 20));
+        // --Gets 20 customers in order starting from id 5--
+        System.out.println(chiDao.getCustomersPagination(5, 20));
     }
 }
