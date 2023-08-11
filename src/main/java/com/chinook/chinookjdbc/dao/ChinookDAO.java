@@ -48,24 +48,26 @@ public class ChinookDAO {
         return stringBuilder.toString();
     }
 
-    // >>> Gets all customers and prints them
-    public void printAllCustomers() {
+    // >>>Gets all customers from the customer-table and returns a list with records
+    // of them<<<
+    public List<Customer> getAllCustomersToList() {
         String sql = "SELECT * FROM customer";
+        List<Customer> customerList = new ArrayList<Customer>();
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             PreparedStatement statement = conn.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                System.out.println("\n");
-                System.out.println(resultSet.getInt(1) + " " + resultSet.getString(2) + " "
-                        + resultSet.getString(3) + " " + resultSet.getString(8) + " "
-                        + resultSet.getString(9) + " " + resultSet.getString(10) + " " + resultSet.getString(12));
-                // System.out.println("\n");
 
+            while (resultSet.next()) {
+                Customer customer = new Customer(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
+                        resultSet.getString(8), resultSet.getString(9), resultSet.getString(12),
+                        resultSet.getString(10));
+                customerList.add(customer);
             }
         } catch (Exception sqle) {
             sqle.printStackTrace();
         }
+        return customerList;
     }
 
     // >>>Gets the customer whit the inserted id and returns a record of this
@@ -88,28 +90,6 @@ public class ChinookDAO {
             sqle.printStackTrace();
         }
         return null;
-    }
-
-    // >>>Gets all customers from the customer-table and returns a list with records
-    // of them<<<
-    public List<Customer> getAllCustomersToList() {
-        String sql = "SELECT * FROM customer";
-        List<Customer> customerList = new ArrayList<Customer>();
-
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
-            PreparedStatement statement = conn.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Customer customer = new Customer(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
-                        resultSet.getString(8), resultSet.getString(9), resultSet.getString(12),
-                        resultSet.getString(10));
-                customerList.add(customer);
-            }
-        } catch (Exception sqle) {
-            sqle.printStackTrace();
-        }
-        return customerList;
     }
 
     // >>>Gets all customers who's name contains the word input and returns a list
