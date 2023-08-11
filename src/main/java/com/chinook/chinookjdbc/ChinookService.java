@@ -6,7 +6,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import com.chinook.chinookjdbc.dao.ChinookDAO;
-import com.chinook.chinookjdbc.dao.models.Customer;
 
 @Component
 public class ChinookService implements ApplicationRunner {
@@ -48,7 +47,7 @@ public class ChinookService implements ApplicationRunner {
 
         // --Gets the country that most customers have and the number of customers who
         // have the country--
-        System.out.println("The country occurring most times is: " + chiDao.getMostOccurringCountry().name()
-                + "\n It occurs " + chiDao.getMostOccurringCountry().timeOccurring() + " times!");
+        System.out.println("The country occurring most times is: " + chiDao.getMostOccurringCountry().country()
+                + "\n It occurs " + chiDao.getMostOccurringCountry().noOfCustomers() + " times!");
     }
 }

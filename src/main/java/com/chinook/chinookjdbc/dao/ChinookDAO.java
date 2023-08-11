@@ -10,8 +10,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.chinook.chinookjdbc.dao.models.Country;
-import com.chinook.chinookjdbc.dao.models.Customer;
+import com.chinook.chinookjdbc.models.Customer;
+import com.chinook.chinookjdbc.models.CustomerCountry;
 
 @Component
 public class ChinookDAO {
@@ -43,7 +43,7 @@ public class ChinookDAO {
         stringBuilder.append("\n Country: " + customer.country());
         stringBuilder.append("\n Postal code: " + customer.postalCode());
         stringBuilder.append("\n E-mail: " + customer.email());
-        stringBuilder.append("\n Phone number: " + customer.phoneNr());
+        stringBuilder.append("\n Phone number: " + customer.phoneNo());
         stringBuilder.append("\n");
         return stringBuilder.toString();
     }
@@ -185,7 +185,7 @@ public class ChinookDAO {
         }
     }
 
-    public Country getMostOccurringCountry() {
+    public CustomerCountry getMostOccurringCountry() {
         String sql = "select country, count (country) as Occurrence from customer group by country order by Occurrence desc limit 1";
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
@@ -193,7 +193,7 @@ public class ChinookDAO {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Country country = new Country(resultSet.getString(1), resultSet.getInt(2));
+                CustomerCountry country = new CustomerCountry(resultSet.getString(1), resultSet.getInt(2));
                 return country;
             }
         } catch (Exception sqle) {
