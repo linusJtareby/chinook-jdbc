@@ -51,5 +51,12 @@ public class ChinookService implements ApplicationRunner {
         //        + "\n It occurs " + chiDao.getMostOccurringCountry().noOfCustomers() + " times!");
         System.out.println(chiDao.getHighestSpendingCustomer());
         System.out.println(chiDao.getPopularGenresFromId(12));
+        // System.out.println("The country occurring most times is: " +
+        // chiDao.getMostOccurringCountry().country()
+        // + "\n It occurs " + chiDao.getMostOccurringCountry().noOfCustomers() + "
+        // times!");
+
+        // --Gets 20 customers in order starting from id 5--
+        System.out.println(chiDao.getCustomersPagination(5, 20));
     }
 }
