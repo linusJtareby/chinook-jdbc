@@ -40,8 +40,8 @@ public class ChinookService implements ApplicationRunner {
         Customer linus = new Customer(0, "Linus", "Täreby", "Sweden", "39400", "0733211434", "test@test.com");
         cri.createEntry(linus);
 
-        //--Updates customer with id "61"--
-        Customer updatedLinus = new Customer(61, "Linus", "Tåreby", "Sweden", "39400", "0733211434", "test@test.com");
+        //--Updates customer with id "60"--
+        Customer updatedLinus = new Customer(60, "Linus", "Tåreby", "Sweden", "39400", "0733211434", "test@test.com");
         cri.updateEntry(updatedLinus);
 
         //--Gets the country that most customers have and the number of customers who
