@@ -116,6 +116,31 @@ public class ChinookDAO {
         return customerList;
     }
 
+    public List<Customer> getCustomersPagination(int rowToStart, int numberOfRows) {
+
+        String sql = "select * from customer offset ? limit ?";
+        List<Customer> results = new ArrayList<Customer>();
+
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, rowToStart - 1);
+            statement.setInt(2, numberOfRows);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Customer customer = new Customer(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
+                        resultSet.getString(8), resultSet.getString(9), resultSet.getString(12),
+                        resultSet.getString(10));
+                results.add(customer);
+            }
+
+        } catch (Exception sqle) {
+            sqle.printStackTrace();
+        }
+        return results;
+    }
+
     // >>>Inserts a new customer in the customer-table
     // >>>Attributes witch are not defined sets to null
     // >>> ID is auto-generated
