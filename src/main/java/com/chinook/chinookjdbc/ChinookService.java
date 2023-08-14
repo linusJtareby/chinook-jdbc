@@ -1,62 +1,60 @@
 package com.chinook.chinookjdbc;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import com.chinook.chinookjdbc.dao.ChinookDAO;
+import com.chinook.chinookjdbc.models.Customer;
+import com.chinook.chinookjdbc.repository.CustomerRepositoryImplementation;
 
 @Component
 public class ChinookService implements ApplicationRunner {
 
-    private final ChinookDAO chiDao;
+    private final CustomerRepositoryImplementation cri;
 
-    @Autowired
-    public ChinookService(ChinookDAO chiDao) {
-        this.chiDao = chiDao;
+    public ChinookService(CustomerRepositoryImplementation cri) {
+        this.cri = cri;
     }
-
+        
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        chiDao.testDataBaseConnectionI();
+        
 
-        // --Gets customer with id 5 and prints it out --
-        // System.out.println(chiDao.customerStringBuilder(chiDao.getCustomerById(5)));
+        //--Gets customer with id 5 and prints it out --
+        System.out.println(cri.findById(5));
 
-        // --Gets all customers, puts them in a a list, each customer in the returned
-        // list is printed --
-        // for (Customer customer : chiDao.getAllCustomersToList()) {
-        // System.out.println(chiDao.customerStringBuilder(customer));
-        // }
+        //--Gets all customers, puts them in a a list, each customer in the returned
+        //list is printed --
+        for (Customer customer : cri.findAll()) {
+        System.out.println(customer);
+        }
 
-        // --Print all customers with "na" in there name--
-        // for (Customer customer : chiDao.getCustomerByName("na")) {
-        // System.out.println(chiDao.customerStringBuilder(customer));
-        // }
+        //--Print all customers with "na" in there name--
+        for (Customer customer : cri.findCustomerByName("na")) {
+        System.out.println(customer);
+        }
 
-        // chiDao.getMostOccuringCountry();
+        System.out.println(cri.findMostOccurringCountry());
 
-        // --Insert customer --
-        // chiDao.insertCustomer("Linus", "Täreby", "Sweden", "39400", "test@test.com",
-        // "0733211434");
+        //--Insert customer --
+        Customer linus = new Customer(0, "Linus", "Täreby", "Sweden", "39400", "0733211434", "test@test.com");
+        cri.createEntry(linus);
 
-        // --Updates customer with id "61"--
-        // chiDao.updateCustomer("Linus", "Täreby", "Sweden", "39400", "test@test.com",
-        // "0733211434", 61);
+        //--Updates customer with id "61"--
+        Customer updatedLinus = new Customer(61, "Linus", "Tåreby", "Sweden", "39400", "0733211434", "test@test.com");
+        cri.updateEntry(updatedLinus);
 
-        // --Gets the country that most customers have and the number of customers who
-        // have the country--
-        //System.out.println("The country occurring most times is: " + chiDao.getMostOccurringCountry().country()
-        //        + "\n It occurs " + chiDao.getMostOccurringCountry().noOfCustomers() + " times!");
-        System.out.println(chiDao.getHighestSpendingCustomer());
-        System.out.println(chiDao.getPopularGenresFromId(12));
-        // System.out.println("The country occurring most times is: " +
-        // chiDao.getMostOccurringCountry().country()
-        // + "\n It occurs " + chiDao.getMostOccurringCountry().noOfCustomers() + "
-        // times!");
+        //--Gets the country that most customers have and the number of customers who
+        //have the country--
+        System.out.println("The country occurring most times is: " + cri.findMostOccurringCountry().country()
+               + "\n It occurs " + cri.findMostOccurringCountry().noOfCustomers() + " times!");
+        System.out.println(cri.findHighestSpendingCustomer());
+
+        //--Gets the most popular genre/s by one customer
+        System.out.println(cri.findCustomersMostPopularGenre(12));
+        
 
         // --Gets 20 customers in order starting from id 5--
-        System.out.println(chiDao.getCustomersPagination(5, 20));
+        System.out.println(cri.findCustomersPagination(5, 20));
     }
 }

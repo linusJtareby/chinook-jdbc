@@ -1,4 +1,4 @@
-package com.chinook.chinookjdbc.dao;
+package com.chinook.chinookjdbc.repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,16 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.chinook.chinookjdbc.models.Customer;
 import com.chinook.chinookjdbc.models.CustomerCountry;
 import com.chinook.chinookjdbc.models.CustomerGenre;
 import com.chinook.chinookjdbc.models.CustomerSpender;
 
-@Component
-public class ChinookDAO {
-
+@Repository
+public class CustomerRepositoryImplementation implements CustomerRepository{
     @Value("${spring.datasource.url}")
     private String url;
 
@@ -27,32 +26,8 @@ public class ChinookDAO {
     @Value("${spring.datasource.password}")
     private String password;
 
-    // >>> Testing the database-connection
-    public void testDataBaseConnectionI() {
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
-            System.out.print(String.format("\n>>> Connection to database %s\n", conn.getMetaData().getURL()));
-        } catch (Exception sqle) {
-            sqle.printStackTrace();
-        }
-    }
-
-    // >>> Building a string with the data from a Customer-record
-    // >>> Returns a string
-    public String customerStringBuilder(Customer customer) {
-        StringBuilder stringBuilder = new StringBuilder("Id: " + customer.id());
-        stringBuilder.append("\n Name: " + customer.firstName());
-        stringBuilder.append(" " + customer.lastName());
-        stringBuilder.append("\n Country: " + customer.country());
-        stringBuilder.append("\n Postal code: " + customer.postalCode());
-        stringBuilder.append("\n E-mail: " + customer.email());
-        stringBuilder.append("\n Phone number: " + customer.phoneNo());
-        stringBuilder.append("\n");
-        return stringBuilder.toString();
-    }
-
-    // >>>Gets all customers from the customer-table and returns a list with records
-    // of them<<<
-    public List<Customer> getAllCustomersToList() {
+    @Override
+    public List<Customer> findAll() {
         String sql = "SELECT * FROM customer";
         List<Customer> customerList = new ArrayList<Customer>();
 
@@ -72,9 +47,8 @@ public class ChinookDAO {
         return customerList;
     }
 
-    // >>>Gets the customer whit the inserted id and returns a record of this
-    // customer
-    public Customer getCustomerById(int id) {
+    @Override
+    public Customer findById(Integer id) {
         String sql = "SELECT * FROM customer WHERE customer_id = ?";
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
@@ -94,16 +68,15 @@ public class ChinookDAO {
         return null;
     }
 
-    // >>>Gets all customers who's name contains the word input and returns a list
-    // with records of all those customers<<<
-    public List<Customer> getCustomerByName(String searchWord) {
+    @Override
+    public List<Customer> findCustomerByName(String name) {
         String sql = "SELECT * FROM customer WHERE first_name LIKE ?";
 
         List<Customer> customerList = new ArrayList<Customer>();
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, "%" + searchWord + "%");
+            statement.setString(1, "%" + name + "%");
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -118,15 +91,69 @@ public class ChinookDAO {
         return customerList;
     }
 
-    public List<Customer> getCustomersPagination(int rowToStart, int numberOfRows) {
+    @Override
+    public void createEntry(Customer customer) {
+        String sql = "insert into customer (first_name, last_name, country, postal_code, phone, email) values (?,?,?,?,?,?)";
 
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, customer.firstName());
+            statement.setString(2, customer.lastName());
+            statement.setString(3, customer.country());
+            statement.setString(4, customer.postalCode());
+            statement.setString(5, customer.phoneNo());
+            statement.setString(6, customer.phoneNo());
+
+            statement.executeUpdate();
+            statement.close();
+
+        } catch (Exception sqle) {
+            sqle.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateEntry(Customer customer) {
+        String sql = "update customer set first_name = ?, last_name = ?, country = ?, postal_code = ?, phone = ?, email = ? where customer_id = ?";
+
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, customer.firstName());
+            statement.setString(2, customer.lastName());
+            statement.setString(3, customer.country());
+            statement.setString(4, customer.postalCode());
+            statement.setString(5, customer.email());
+            statement.setString(6, customer.phoneNo());
+            statement.setInt(7, customer.id());
+
+            statement.executeUpdate();
+
+        } catch (Exception sqle) {
+            sqle.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteEntry(Integer id) {
+        String sql = "delete customer where customer_id = ?";
+
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.executeUpdate();
+        } catch (Exception sqle) {
+            sqle.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Customer> findCustomersPagination(int offset, int limit) {
         String sql = "select * from customer offset ? limit ?";
         List<Customer> results = new ArrayList<Customer>();
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setInt(1, rowToStart - 1);
-            statement.setInt(2, numberOfRows);
+            statement.setInt(1, offset - 1);
+            statement.setInt(2, limit);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -143,56 +170,8 @@ public class ChinookDAO {
         return results;
     }
 
-    // >>>Inserts a new customer in the customer-table
-    // >>>Attributes witch are not defined sets to null
-    // >>> ID is auto-generated
-    public void insertCustomer(String firstName, String lastName, String country, String postalCode, String email,
-
-            String phoneNr) {
-        String sql = "insert into customer (first_name, last_name, country, postal_code, phone, email) values (?,?,?,?,?,?)";
-
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
-            statement.setString(3, country);
-            statement.setString(4, postalCode);
-            statement.setString(5, email);
-            statement.setString(6, phoneNr);
-
-            statement.executeUpdate();
-            statement.close();
-
-        } catch (Exception sqle) {
-            sqle.printStackTrace();
-        }
-    }
-
-    // >>>Updates all attributes in an existing customer
-    // >>> The customer to change is defined by the last input (int rowIdToChange)
-    public void updateCustomer(String firstName, String lastName, String country, String postalCode, String email,
-            String phoneNr, int rowIdToChange) {
-
-        String sql = "update customer set first_name = ?, last_name = ?, country = ?, postal_code = ?, phone = ?, email = ? where customer_id = ?";
-
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
-            statement.setString(3, country);
-            statement.setString(4, postalCode);
-            statement.setString(5, email);
-            statement.setString(6, phoneNr);
-            statement.setInt(7, rowIdToChange);
-
-            statement.executeUpdate();
-
-        } catch (Exception sqle) {
-            sqle.printStackTrace();
-        }
-    }
-
-    public CustomerCountry getMostOccurringCountry() {
+    @Override
+    public CustomerCountry findMostOccurringCountry() {
         String sql = "select country, count (country) as Occurrence from customer group by country order by Occurrence desc limit 1";
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
@@ -209,7 +188,8 @@ public class ChinookDAO {
         return null;
     }
 
-    public CustomerSpender getHighestSpendingCustomer() {
+    @Override
+    public CustomerSpender findHighestSpendingCustomer() {
         String sql = "select first_name, last_name, x.sum from customer join (select customer_id, SUM(total) sum from invoice group by customer_id order by sum desc limit 1) as x on x.customer_id = customer.customer_id";
 
         try(Connection conn = DriverManager.getConnection(url, username, password)) {
@@ -225,11 +205,10 @@ public class ChinookDAO {
             sqle.printStackTrace();
         }
         return null;
-
     }
 
-    public List<CustomerGenre> getPopularGenresFromId(int id) {
-
+    @Override
+    public List<CustomerGenre> findCustomersMostPopularGenre(int id) {
         List<CustomerGenre> mostpopularGenres = new ArrayList<CustomerGenre>();
 
         String sql = "select citgrf.first_name, citgrf.last_name, citgrf.name from "
@@ -259,4 +238,6 @@ public class ChinookDAO {
         }
         return null;
     }
+
+
 }
