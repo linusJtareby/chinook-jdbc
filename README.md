@@ -23,7 +23,7 @@ The application have 9 different methods:
 
 The application implements the repository-pattern having a generic "CRUD"-repo as parent inherits to a more general Customer-repo.
 The "CustomerRepositoryImplementation"-class then implements the CustomerRepository-class and overrides all it's methods
-specifying what the logic. The application uses Spring-boot JPI and hibernate to connect and manipulate the database.
+specifying what the logic. The application uses Spring Data JPA witch in it self uses Hibernate as its default implementation of the JPA.
 
 ## Requirements
 
@@ -39,6 +39,13 @@ You will also have to have installed:
 Java 20.0 or later
 PostgresSQL - `https://www.postgresql.org/download/`
 Maven 3.6.3 or later
+
+## Running the program
+
+The program is run in the ChinookService-class witch implements the ApplicationRunner-interface. The ChinookService-class injects the
+CustomerRepositoryImplementation and we can use the methods defined in the run-method. One of each method are written out in the run-method
+to test the program and if you cant to test specific methods just change the code in the run-method or comment out the things you don't want
+to run.
 
 ## Contributing
 
